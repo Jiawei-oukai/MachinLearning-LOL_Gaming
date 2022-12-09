@@ -6,5 +6,3 @@ Five aspect may impact the outcome
 4. The degree of balance of the lineup
 5. Champions' control ability score
 The file named with the corresponding number solves the corresponding problem
-
-DP means data processing
