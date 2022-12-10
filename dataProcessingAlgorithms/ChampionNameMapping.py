@@ -1,67 +1,90 @@
 import pandas as pd
-from tqdm import tqdm
+from statistics import mean
 import os
 
 
 class ChampionNameMapping:
     namelist =[]
-    team1 =[]
-    team2 =[]
     championIds =[]
     combos = set()
+    stage = ""
 
-    def __init__(self, namelist):
+    def __init__(self, namelist,stage):
         self.namelist = namelist
-        self.team1 = namelist[:5]
-        self.team2 = namelist[5:]
         self.championIds = self.map_nameToId()
-        
-        df = pd.read_csv("../Useful Features/2.championCombo.csv")
+        self.stage = stage
+
+        df = pd.read_csv("../Useful Features/2.lineupCombo.csv")
         for index, row in df.iterrows():
             combo = frozenset( {row['id1'] , row['id2']})
             self.combos.add(combo)
 
-    def all_feature(self,stage):
-        self.stage = stage
+    def all_feature_values(self):
+        feature_values =[]
 
-        #new_feature_columns = []
-        new_feature_values =[]
+        # 1.counterScores
+        counterScores = self.map_counterScores()
+        feature_values.append(counterScores)
 
-        # 1.counter
+        # 2.champion attackScores and 3.defenseScores
+        attackScores,defenseScores = self.map_attackAndDefenseScores()
+        feature_values.append(attackScores)
+        feature_values.append(defenseScores)
 
-        # 2.attack and 3.defense
-        attacks,defenses = self.map_attackAndDefense()
-        # t1_attack = 0
-        # t2_attack = 0
-        # for i in range(5):
-        #     t1_attack += attack
-        # for i in range(5,10):
-        #     t2_attack += attack
-        # t1_attack = t1_attack/5
-        # t2_attack = t2_attack/5
-        # print ("attack: ")
-        # print  (attacks)
-        # print ("\n")
-        # print ("defense: ")
-        # print (defenses) 
-        # print ("\n")
-
-        #4.champion win rate
-        win_rates = self.map_champions_winRate()
+        # 4.champion winRates
+        win_rates = self.map_winRates()
+        feature_values.append(win_rates)
         
-        #5.champion combo score 
-        combo_count =self.map_champions_combo()
+        # 5.line up combo counts 
+        combo_count =self.map_lineupComboCounts()
+        feature_values.append(combo_count)
         
-        #6.champion control score
-        control_scores = self.map_champions_control()
+        # 6.champion controlScores
+        control_scores = self.map_controlScores()
+        feature_values.append(control_scores)
         
-        return None
+        return feature_values
 
     
-    def map_counter(self):
-        return None
+    def dt_feature_values(self):
+        dt_feature_values = []
 
-    def map_attackAndDefense(self):
+        all_feature_values = self.all_feature_values()
+        
+        dt_feature_values.append(all_feature_values[0])
+        #diff_TeamAttackScore
+        dt_feature_values.append([mean(all_feature_values[1][:5]) - mean(all_feature_values[1][5:])])
+
+        dt_feature_values.append([mean(all_feature_values[2][:5]) - mean(all_feature_values[2][5:])])
+
+        dt_feature_values.append([mean(all_feature_values[3][:5]) - mean(all_feature_values[3][5:])])
+        
+        dt_feature_values.append([all_feature_values[4][0] - all_feature_values[4][1]])
+
+        dt_feature_values.append([mean(all_feature_values[5][:5]) - mean(all_feature_values[5][5:])])
+
+        dt_feature_values.append([mean(all_feature_values[1][:5]) - mean(all_feature_values[2][:5])])
+        dt_feature_values.append([mean(all_feature_values[1][5:]) - mean(all_feature_values[2][5:])])
+
+        return dt_feature_values
+
+    def map_counterScores(self):
+        counterScores = []
+
+        prefix = "../Useful Features/1.counterScore_"
+        suffix = ".csv"
+        path = prefix+self.stage+suffix
+
+        df = pd.read_csv(path)
+        role = ["T","J","M","B","U"]
+        for i in range(5):
+            pos1 = min(self.championIds[i] , self.championIds[i+5])
+            pos2 = max(self.championIds[i] , self.championIds[i+5])
+            counterScore = df.loc[(df[role[i]+"1"] == pos1) & (df[role[i] +"2"] == pos2)].reset_index(drop=True).loc[0,'T_counterScore']
+            counterScores.append(counterScore)
+        return counterScores
+
+    def map_attackAndDefenseScores(self):
         attack_scores =[]
         defense_scores =[]
 
@@ -82,7 +105,7 @@ class ChampionNameMapping:
     def map_diff_ad(self):
         return None
 
-    def map_champions_winRate(self):
+    def map_winRates(self):
         win_rates =[]
 
         prefix = "../Useful Features/3.championWinRate_"
@@ -96,16 +119,26 @@ class ChampionNameMapping:
             win_rates.append(win_rate)
         return win_rates
 
-    def map_champions_combo(self):
-        combo_number = 0
-        for i in range(9):
+    def map_lineupComboCounts(self):
+        combo_counts = []
+        combo_count =0
+        for i in range(4):
+            for j in range(i+1,5):
+                combo = frozenset({self.championIds[i], self.championIds[j]})
+                if combo in self.combos:
+                    combo_count += 1
+        combo_counts.append(combo_count)
+
+        combo_count = 0
+        for i in range(5,9):
             for j in range(i+1,10):
                 combo = frozenset({self.championIds[i], self.championIds[j]})
                 if combo in self.combos:
-                    combo_number += 1
-        return combo_number
+                    combo_count += 1
+        combo_counts.append(combo_count)
+        return combo_counts
     
-    def map_champions_control(self):
+    def map_controlScores(self):
         control_scores =[]
 
         path = "../Useful Features/5.championControlScore.csv"
@@ -124,3 +157,43 @@ class ChampionNameMapping:
             ids.append(id)
         return ids
 
+
+
+def all_feature_columns():
+        feature_columns = [[],[],[],[],[],[]]
+        roles = ["Top","Jug","Mid","Bot","Uti"]
+        teams = ["Team1","Team2"]
+        for i in range(5):
+            c0 = roles[i] + "_counterScore"
+            feature_columns[0].append(c0)
+        for team in teams:
+            c4 = team + "_comboCounts"
+            feature_columns[4].append(c4)
+            for j in range(5):
+                c1 = team+ "_"+ roles[j] +"_attackScore"
+                c2 = team+ "_"+ roles[j] +"_defenseScore"
+                c3 = team+ "_"+ roles[j] +"_winRates"
+                c5 = team+ "_"+ roles[j] +"_controlScore"
+                feature_columns[1].append(c1)
+                feature_columns[2].append(c2)
+                feature_columns[3].append(c3)
+                feature_columns[5].append(c5)
+        
+        return feature_columns
+
+
+def dt_feature_columns(self):
+        dt_feature_columns = []
+        all_feature_columns = self.all_feature_columns()
+        
+        dt_feature_columns.append(all_feature_columns[0])
+        dt_feature_columns.append(["diff_TeamAttackScore"])
+        dt_feature_columns.append(["diff_TeamDefenseScore"])
+        dt_feature_columns.append(["diff_TeamWinRate"])
+        dt_feature_columns.append(["diff_TeamComboCount"])
+        dt_feature_columns.append(["diff_TeamControlScore"])
+
+        dt_feature_columns.append(["Team1_AttackDefenseBalanceScore"])
+        dt_feature_columns.append(["Team3_AttackDefenseBalanceScore"])
+
+        return dt_feature_columns
