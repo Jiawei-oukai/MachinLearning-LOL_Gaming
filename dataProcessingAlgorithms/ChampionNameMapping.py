@@ -1,6 +1,5 @@
 import pandas as pd
 from statistics import mean
-import os
 
 
 class ChampionNameMapping:
@@ -18,7 +17,6 @@ class ChampionNameMapping:
 
     def fit_data(self, idlist, stage):
         self.championIds = idlist
-        print(self.championIds)
         # self.namelist = namelist
         self.stage = stage
     
