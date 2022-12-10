@@ -3,7 +3,7 @@ from statistics import mean
 
 
 class ChampionNameMapping:
-    #namelist =[]
+    namelist =[]
     championIds =[]
     combos = set()
     stage = ""
@@ -15,9 +15,13 @@ class ChampionNameMapping:
             combo = frozenset( {row['id1'] , row['id2']})
             self.combos.add(combo)
 
-    def fit_data(self, idlist, stage):
+    def fit_data_id(self, idlist, stage):
         self.championIds = idlist
-        # self.namelist = namelist
+        self.stage = stage
+
+    def fit_data_name(self, namelist, stage):
+        self.namelist = namelist
+        self.championIds = namelist
         self.stage = stage
     
     def all_feature_values(self):
