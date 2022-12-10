@@ -8,12 +8,18 @@ class ChampionNameMapping:
     team1 =[]
     team2 =[]
     championIds =[]
+    combos = set()
 
     def __init__(self, namelist):
         self.namelist = namelist
         self.team1 = namelist[:5]
         self.team2 = namelist[5:]
         self.championIds = self.map_nameToId()
+        
+        df = pd.read_csv("../Useful Features/2.championCombo.csv")
+        for index, row in df.iterrows():
+            combo = frozenset( {row['id1'] , row['id2']})
+            self.combos.add(combo)
 
     def all_feature(self,stage):
         self.stage = stage
@@ -44,6 +50,7 @@ class ChampionNameMapping:
         win_rates = self.map_champions_winRate()
         
         #5.champion combo score 
+        combo_count =self.map_champions_combo()
         
         #6.champion control score
         control_scores = self.map_champions_control()
@@ -83,7 +90,6 @@ class ChampionNameMapping:
         path = prefix+self.stage+suffix
 
         df = pd.read_csv(path)
-        # print (df)
         role = ["T","J","M","B","U","T","J","M","B","U"]
         for i in range(10):
             win_rate = df[role[i]+"_winRate"].loc[df['id']==self.championIds[i]].reset_index(drop=True).loc[0]
@@ -91,15 +97,19 @@ class ChampionNameMapping:
         return win_rates
 
     def map_champions_combo(self):
-        return None
+        combo_number = 0
+        for i in range(9):
+            for j in range(i+1,10):
+                combo = frozenset({self.championIds[i], self.championIds[j]})
+                if combo in self.combos:
+                    combo_number += 1
+        return combo_number
     
     def map_champions_control(self):
         control_scores =[]
 
         path = "../Useful Features/5.championControlScore.csv"
-
         df = pd.read_csv(path)
-        # print (df)
         for championId in self.championIds:
             control_score = df.loc[df['id']==championId].reset_index(drop=True).loc[0,'control_score']
             control_scores.append(control_score)
@@ -107,6 +117,7 @@ class ChampionNameMapping:
 
     def map_nameToId(self):
         ids = []
+
         df_cid = pd.read_csv("../datasets/championID.csv")
         for name in self.namelist:
             id = df_cid.loc[df_cid['name']== name].reset_index(drop=True).loc[0,'id']
