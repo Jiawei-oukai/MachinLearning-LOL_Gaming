@@ -110,8 +110,8 @@ class ChampionNameMapping:
 
         df =self.df_goldAbility
         for championId in self.championIds:
-            gold_abilities = df.loc[df['id']==championId]['gold_ability'].iloc[0]
-            gold_abilities.append(gold_abilities)
+            gold_ability = df.loc[df['id']==championId]['gold_ability'].iloc[0]
+            gold_abilities.append(gold_ability)
         return gold_abilities
 
     def all_feature_values_list(self):
