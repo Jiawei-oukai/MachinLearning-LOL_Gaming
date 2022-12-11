@@ -197,7 +197,7 @@ class ChampionNameMapping:
 
     @classmethod
     def all_feature_columns(self):
-        feature_columns = [[],[],[],[],[],[]]
+        feature_columns = [[],[],[],[],[],[],[]]
         roles = ["Top","Jug","Mid","Bot","Uti"]
         teams = ["Team1","Team2"]
         for i in range(5):
@@ -216,7 +216,7 @@ class ChampionNameMapping:
                 feature_columns[2].append(c2)
                 feature_columns[3].append(c3)
                 feature_columns[5].append(c5)
-                feature_columns[5].append(c6)
+                feature_columns[6].append(c6)
 
         output =[]
         for c in feature_columns:
