@@ -40,6 +40,6 @@ def to_logisticRegressionData(df,stage):
         
         df_all.loc[len(df_all.index)] = dtv
 
-    df_all['TeamVictory'] = df_new['teamVictory']
+    df_all['TeamVictory'] = df['teamVictory']
     
     return df_all
