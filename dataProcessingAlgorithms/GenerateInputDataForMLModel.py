@@ -11,7 +11,6 @@ def to_comparisonFeatureData(df,stage):
         columns.append("Player_" + str(i) + "_pick")
     df_new = df[columns]
 
-
     model = ChampionNameMapping(stage)
     for index, row in tqdm(df_new.iterrows()):
         ids = row.values.tolist()
