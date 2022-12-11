@@ -188,7 +188,7 @@ class ChampionIdMapping:
     def map_nameToId(self):
         ids = []
 
-        df_cid = pd.read_csv("../datasets/championID.csv")
+        df_cid = pd.read_csv("./datasets/championID.csv")
         for name in self.namelist:
             id = df_cid.loc[df_cid['name']== name]['id'].iloc[0]
             ids.append(id)
@@ -246,29 +246,32 @@ class ChampionIdMapping:
         return dt_feature_columns
 
 
-def to_cf(idslist,stage):
+def featureForPredict(namelist,stage,idlist=None):
+    # if namelist:
+    #     idslist = []
+
+    #     df_cid = pd.read_csv("./datasets/championID.csv")
+    #     for name in namelist:
+    #         print (name)
+    #         id = df_cid.loc[df_cid['name']== name]['id'].iloc[0]
+    #         idslist.append(id)
+    # else:
+    #     idsList = idlist
+
     dt_columns = ChampionIdMapping.dt_feature_columns()
-    df_DT = pd.DataFrame(columns=dt_columns)
-
-    model = ChampionIdMapping(stage)
-    for ids in idslist:
-        model.fit_data_id(ids)
-        dtv = model.dt_feature_values()
-
-        df_DT.loc[len(df_DT.index)] = dtv
-    
-    return df_DT
-
-def to_af(idslist,stage):
     all_columns = ChampionIdMapping.all_feature_columns()
-    df_all = pd.DataFrame(columns=all_columns)
-
+    
+    comp_feature = pd.DataFrame(columns=dt_columns)
+    all_feature = pd.DataFrame(columns=all_columns)
 
     model = ChampionIdMapping(stage)
-    for ids in idslist:
-        model.fit_data_id(ids)
-        dtv = model.all_feature_values()
-        
-        df_all.loc[len(df_all.index)] = dtv
-    
-    return df_all
+    for names in namelist:
+        model.fit_data_name(names)
+        dtvc = model.dt_feature_values()
+        dtva = model.all_feature_values()
+
+        comp_feature.loc[len(comp_feature.index)] = dtvc
+        all_feature.loc[len(all_feature.index)] = dtva
+
+    return all_feature,comp_feature
+
