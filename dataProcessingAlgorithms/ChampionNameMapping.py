@@ -11,9 +11,11 @@ class ChampionNameMapping:
     df_attackAndDefenseScore = None
     df_winRate = None
     df_controlScore = pd.read_csv("../Useful Features/5.championControlScore.csv")
+    df_goldAbility = None
     prefix1 = "../Useful Features/1.counterScore_"
     prefix2 = "../Useful Features/4.championAttackDefenseScore_"
     prefix3 = "../Useful Features/3.championWinRate_"
+    prefix4 = "../Useful Features/6.championGoldAbility_"
     suffix = ".csv"
     
 
@@ -30,6 +32,7 @@ class ChampionNameMapping:
         self.df_counterScore = pd.read_csv(self.prefix1+self.stage+self.suffix)
         self.df_attackAndDefenseScore = pd.read_csv(self.prefix2+self.stage+self.suffix)
         self.df_winRate = pd.read_csv(self.prefix3+self.stage+self.suffix)
+        self.df_goldAbility = pd.read_csv(self.prefix4+self.stage+self.suffix)
 
     def fit_data_name(self, namelist):
         self.namelist = namelist
@@ -38,6 +41,7 @@ class ChampionNameMapping:
         self.df_counterScore = pd.read_csv(self.prefix1+self.stage+self.suffix)
         self.df_attackAndDefenseScore = pd.read_csv(self.prefix2+self.stage+self.suffix)
         self.df_winRate = pd.read_csv(self.prefix3+self.stage+self.suffix)
+        self.df_goldAbility = pd.read_csv(self.prefix4+self.stage+self.suffix)
 
     def map_counterScores(self):
         counterScores = []
@@ -104,7 +108,7 @@ class ChampionNameMapping:
     def map_goldAbility(self):
         gold_abilities =[]
 
-        df =self.df_controlScore
+        df =self.df_goldAbility
         for championId in self.championIds:
             gold_abilities = df.loc[df['id']==championId]['gold_ability'].iloc[0]
             gold_abilities.append(gold_abilities)
