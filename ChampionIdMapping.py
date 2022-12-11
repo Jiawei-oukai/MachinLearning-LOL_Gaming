@@ -246,7 +246,8 @@ class ChampionIdMapping:
         return dt_feature_columns
 
 
-def featureForPredict(namelist,stage,idlist=None):
+def featureForPredict(namelist,stage):
+
 
     dt_columns = ChampionIdMapping.dt_feature_columns()
     all_columns = ChampionIdMapping.all_feature_columns()
@@ -264,4 +265,27 @@ def featureForPredict(namelist,stage,idlist=None):
         all_feature.loc[len(all_feature.index)] = dtva
 
     return all_feature,comp_feature
+
+
+
+# def featureForPredict(idslist,stage,string):
+
+
+#     dt_columns = ChampionIdMapping.dt_feature_columns()
+#     all_columns = ChampionIdMapping.all_feature_columns()
+    
+#     comp_feature = pd.DataFrame(columns=dt_columns)
+#     all_feature = pd.DataFrame(columns=all_columns)
+
+#     model = ChampionIdMapping(stage)
+#     for ids in idslist:
+#         model.fit_data_id(ids)
+#         dtvc = model.dt_feature_values()
+#         dtva = model.all_feature_values()
+
+#         comp_feature.loc[len(comp_feature.index)] = dtvc
+#         all_feature.loc[len(all_feature.index)] = dtva
+
+#     return all_feature,comp_feature
+
 
