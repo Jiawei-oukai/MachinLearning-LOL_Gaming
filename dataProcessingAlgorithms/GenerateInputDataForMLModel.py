@@ -2,7 +2,7 @@ from ChampionNameMapping import ChampionNameMapping
 from tqdm import tqdm
 import pandas as pd
 
-def to_decisionTreeData(df,stage):
+def to_comparisonFeatureData(df,stage):
     dt_columns = ChampionNameMapping.dt_feature_columns()
     df_DT = pd.DataFrame(columns=dt_columns)
 
@@ -10,7 +10,6 @@ def to_decisionTreeData(df,stage):
     for i in range (1,11):
         columns.append("Player_" + str(i) + "_pick")
     df_new = df[columns]
-
 
     model = ChampionNameMapping(stage)
     for index, row in tqdm(df_new.iterrows()):
@@ -24,7 +23,7 @@ def to_decisionTreeData(df,stage):
     
     return df_DT
 
-def to_logisticRegressionData(df,stage):
+def to_allFeatureData(df,stage):
     all_columns = ChampionNameMapping.all_feature_columns()
     df_all = pd.DataFrame(columns=all_columns)
 
