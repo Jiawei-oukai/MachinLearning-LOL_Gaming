@@ -21,24 +21,8 @@ class ChampionNameMapping:
 
     def fit_data_name(self, namelist, stage):
         self.namelist = namelist
-        self.championIds = namelist
+        self.championIds = self.map_nameToId()
         self.stage = stage
-    
-    def all_feature_values(self):
-        feature_values =[]
-
-        for v in self.all_feature_values_list():
-            feature_values += v
-        
-        return feature_values
-
-    def dt_feature_values(self):
-        feature_values =[]
-
-        for v in self.dt_feature_values_list():
-            feature_values += v
-        
-        return feature_values
 
     def all_feature_values_list(self):
         feature_values =[]
@@ -87,6 +71,22 @@ class ChampionNameMapping:
         dt_feature_values.append([mean(all_feature_values[1][5:]) - mean(all_feature_values[2][5:])])
 
         return dt_feature_values
+
+    def all_feature_values(self):
+        feature_values =[]
+
+        for v in self.all_feature_values_list():
+            feature_values += v
+        
+        return feature_values
+
+    def dt_feature_values(self):
+        feature_values =[]
+
+        for v in self.dt_feature_values_list():
+            feature_values += v
+        
+        return feature_values
 
     def map_counterScores(self):
         counterScores = []
@@ -164,14 +164,14 @@ class ChampionNameMapping:
             control_scores.append(control_score)
         return control_scores
 
-    # def map_nameToId(self):
-    #     ids = []
+    def map_nameToId(self):
+        ids = []
 
-    #     df_cid = pd.read_csv("../datasets/championID.csv")
-    #     for name in self.namelist:
-    #         id = df_cid.loc[df_cid['name']== name].reset_index(drop=True).loc[0,'id']
-    #         ids.append(id)
-    #     return ids
+        df_cid = pd.read_csv("../datasets/championID.csv")
+        for name in self.namelist:
+            id = df_cid.loc[df_cid['name']== name].reset_index(drop=True).loc[0,'id']
+            ids.append(id)
+        return ids
 
 
     @classmethod
