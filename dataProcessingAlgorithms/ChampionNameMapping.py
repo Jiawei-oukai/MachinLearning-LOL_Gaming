@@ -100,7 +100,7 @@ class ChampionNameMapping:
         for i in range(5):
             pos1 = min(self.championIds[i] , self.championIds[i+5])
             pos2 = max(self.championIds[i] , self.championIds[i+5])
-            counterScore = df.loc[(df[role[i]+"1"] == pos1) & (df[role[i] +"2"] == pos2)].reset_index(drop=True).loc[0,role[i]+'_counterScore']
+            counterScore = df.loc[(df['id1'] == pos1) & (df['id2'] == pos2)].reset_index(drop=True).loc[0,role[i]+'_counterScore']
             counterScores.append(counterScore)
         return counterScores
 
