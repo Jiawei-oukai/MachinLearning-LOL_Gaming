@@ -100,6 +100,15 @@ class ChampionNameMapping:
             control_score = df.loc[df['id']==championId]['control_score'].iloc[0]
             control_scores.append(control_score)
         return control_scores
+    
+    def map_goldAbility(self):
+        gold_abilities =[]
+
+        df =self.df_controlScore
+        for championId in self.championIds:
+            gold_abilities = df.loc[df['id']==championId]['gold_ability'].iloc[0]
+            gold_abilities.append(gold_abilities)
+        return gold_abilities
 
     def all_feature_values_list(self):
         feature_values =[]
@@ -108,12 +117,12 @@ class ChampionNameMapping:
         counterScores = self.map_counterScores()
         feature_values.append(counterScores)
 
-        # 2.champion attackScores and 3.defenseScores
+        # 2.champions attackScores and 3.defenseScores
         attackScores,defenseScores = self.map_attackAndDefenseScores()
         feature_values.append(attackScores)
         feature_values.append(defenseScores)
 
-        # 4.champion winRates
+        # 4.champions winRates
         win_rates = self.map_winRates()
         feature_values.append(win_rates)
         
@@ -121,9 +130,13 @@ class ChampionNameMapping:
         combo_count =self.map_lineupComboCounts()
         feature_values.append(combo_count)
         
-        # 6.champion controlScores
+        # 6.champions controlScores
         control_scores = self.map_controlScores()
         feature_values.append(control_scores)
+                
+        # 7.champions gold abilities
+        gold_abilities = self.map_goldAbility()
+        feature_values.append(gold_abilities)
         
         return feature_values
 
@@ -144,6 +157,8 @@ class ChampionNameMapping:
         dt_feature_values.append([all_feature_values[4][0] - all_feature_values[4][1]])
 
         dt_feature_values.append([mean(all_feature_values[5][:5]) - mean(all_feature_values[5][5:])])
+        
+        dt_feature_values.append([mean(all_feature_values[6][:5]) - mean(all_feature_values[6][5:])])
 
         dt_feature_values.append([mean(all_feature_values[1][:5]) - mean(all_feature_values[2][:5])])
         
@@ -192,10 +207,12 @@ class ChampionNameMapping:
                 c2 = team+ "_"+ roles[j] +"_defenseScore"
                 c3 = team+ "_"+ roles[j] +"_winRates"
                 c5 = team+ "_"+ roles[j] +"_controlScore"
+                c6 = team+ "_"+ roles[j] +"_goldAbility"
                 feature_columns[1].append(c1)
                 feature_columns[2].append(c2)
                 feature_columns[3].append(c3)
                 feature_columns[5].append(c5)
+                feature_columns[5].append(c6)
 
         output =[]
         for c in feature_columns:
@@ -218,6 +235,7 @@ class ChampionNameMapping:
         dt_feature_columns.append("diff_TeamWinRate")
         dt_feature_columns.append("diff_TeamComboCount")
         dt_feature_columns.append("diff_TeamControlScore")
+        dt_feature_columns.append("diff_TeamGoldAbility")
 
         dt_feature_columns.append("Team1_AttackDefenseBalanceScore")
         dt_feature_columns.append("Team2_AttackDefenseBalanceScore")
