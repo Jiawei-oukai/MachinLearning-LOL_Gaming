@@ -11,6 +11,7 @@ def to_decisionTreeData(df,stage):
         columns.append("Player_" + str(i) + "_pick")
     df_new = df[columns]
 
+
     for index, row in tqdm(df_new.iterrows()):
         ids = row.values.tolist()
         model = ChampionNameMapping()
@@ -32,9 +33,18 @@ def to_logisticRegressionData(df,stage):
         columns.append("Player_" + str(i) + "_pick")
     df_new = df[columns]
 
+    # for index, row in tqdm(df_new.iterrows()):
+    #     ids = row.values.tolist()
+    #     model = ChampionNameMapping()
+    #     model.fit_data_id(ids,stage)
+    #     dtv = model.all_feature_values()
+        
+    #     df_all.loc[len(df_all.index)] = dtv
+    
+    model = ChampionNameMapping()
+    
     for index, row in tqdm(df_new.iterrows()):
         ids = row.values.tolist()
-        model = ChampionNameMapping()
         model.fit_data_id(ids,stage)
         dtv = model.all_feature_values()
         
