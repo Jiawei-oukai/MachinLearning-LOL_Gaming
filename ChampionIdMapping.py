@@ -247,16 +247,6 @@ class ChampionIdMapping:
 
 
 def featureForPredict(namelist,stage,idlist=None):
-    # if namelist:
-    #     idslist = []
-
-    #     df_cid = pd.read_csv("./datasets/championID.csv")
-    #     for name in namelist:
-    #         print (name)
-    #         id = df_cid.loc[df_cid['name']== name]['id'].iloc[0]
-    #         idslist.append(id)
-    # else:
-    #     idsList = idlist
 
     dt_columns = ChampionIdMapping.dt_feature_columns()
     all_columns = ChampionIdMapping.all_feature_columns()
