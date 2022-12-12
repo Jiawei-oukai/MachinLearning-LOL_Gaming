@@ -2,7 +2,7 @@ import pandas as pd
 from statistics import mean
 
 
-class ChampionNameMapping:
+class ChampionNameMappingGold:
     namelist =[]
     championIds =[]
     combos = set()
