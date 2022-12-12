@@ -11,9 +11,11 @@ class ChampionNameMapping:
     df_attackAndDefenseScore = None
     df_winRate = None
     df_controlScore = pd.read_csv("../Useful Features/5.championControlScore.csv")
+    df_goldAbility = None
     prefix1 = "../Useful Features/1.counterScore_"
     prefix2 = "../Useful Features/4.championAttackDefenseScore_"
     prefix3 = "../Useful Features/3.championWinRate_"
+    prefix4 = "../Useful Features/6.championGoldAbility_"
     suffix = ".csv"
     
 
@@ -30,6 +32,7 @@ class ChampionNameMapping:
         self.df_counterScore = pd.read_csv(self.prefix1+self.stage+self.suffix)
         self.df_attackAndDefenseScore = pd.read_csv(self.prefix2+self.stage+self.suffix)
         self.df_winRate = pd.read_csv(self.prefix3+self.stage+self.suffix)
+        self.df_goldAbility = pd.read_csv(self.prefix4+self.stage+self.suffix)
 
     def fit_data_name(self, namelist):
         self.namelist = namelist
@@ -38,6 +41,7 @@ class ChampionNameMapping:
         self.df_counterScore = pd.read_csv(self.prefix1+self.stage+self.suffix)
         self.df_attackAndDefenseScore = pd.read_csv(self.prefix2+self.stage+self.suffix)
         self.df_winRate = pd.read_csv(self.prefix3+self.stage+self.suffix)
+        self.df_goldAbility = pd.read_csv(self.prefix4+self.stage+self.suffix)
 
     def map_counterScores(self):
         counterScores = []
@@ -100,6 +104,15 @@ class ChampionNameMapping:
             control_score = df.loc[df['id']==championId]['control_score'].iloc[0]
             control_scores.append(control_score)
         return control_scores
+    
+    def map_goldAbility(self):
+        gold_abilities =[]
+
+        df =self.df_goldAbility
+        for championId in self.championIds:
+            gold_ability = df.loc[df['id']==championId]['gold_ability'].iloc[0]
+            gold_abilities.append(gold_ability)
+        return gold_abilities
 
     def all_feature_values_list(self):
         feature_values =[]
@@ -125,6 +138,10 @@ class ChampionNameMapping:
         control_scores = self.map_controlScores()
         feature_values.append(control_scores)
                 
+        # 7.champions gold abilities
+        gold_abilities = self.map_goldAbility()
+        feature_values.append(gold_abilities)
+        
         return feature_values
 
     def dt_feature_values_list(self):
@@ -134,6 +151,7 @@ class ChampionNameMapping:
         
         dt_feature_values.append(all_feature_values[0])
         
+        #diff_TeamAttackScore
         dt_feature_values.append([mean(all_feature_values[1][:5]) - mean(all_feature_values[1][5:])])
 
         dt_feature_values.append([mean(all_feature_values[2][:5]) - mean(all_feature_values[2][5:])])
@@ -143,6 +161,8 @@ class ChampionNameMapping:
         dt_feature_values.append([all_feature_values[4][0] - all_feature_values[4][1]])
 
         dt_feature_values.append([mean(all_feature_values[5][:5]) - mean(all_feature_values[5][5:])])
+        
+        dt_feature_values.append([mean(all_feature_values[6][:5]) - mean(all_feature_values[6][5:])])
 
         dt_feature_values.append([mean(all_feature_values[1][:5]) - mean(all_feature_values[2][:5])])
         
@@ -177,7 +197,7 @@ class ChampionNameMapping:
 
     @classmethod
     def all_feature_columns(self):
-        feature_columns = [[],[],[],[],[],[]]
+        feature_columns = [[],[],[],[],[],[],[]]
         roles = ["Top","Jug","Mid","Bot","Uti"]
         teams = ["Team1","Team2"]
         for i in range(5):
@@ -191,10 +211,12 @@ class ChampionNameMapping:
                 c2 = team+ "_"+ roles[j] +"_defenseScore"
                 c3 = team+ "_"+ roles[j] +"_winRates"
                 c5 = team+ "_"+ roles[j] +"_controlScore"
+                c6 = team+ "_"+ roles[j] +"_goldAbility"
                 feature_columns[1].append(c1)
                 feature_columns[2].append(c2)
                 feature_columns[3].append(c3)
                 feature_columns[5].append(c5)
+                feature_columns[6].append(c6)
 
         output =[]
         for c in feature_columns:
@@ -217,6 +239,7 @@ class ChampionNameMapping:
         dt_feature_columns.append("diff_TeamWinRate")
         dt_feature_columns.append("diff_TeamComboCount")
         dt_feature_columns.append("diff_TeamControlScore")
+        dt_feature_columns.append("diff_TeamGoldAbility")
 
         dt_feature_columns.append("Team1_AttackDefenseBalanceScore")
         dt_feature_columns.append("Team2_AttackDefenseBalanceScore")
